@@ -1,5 +1,37 @@
+/* 移除原有margin-top和height设置 */
 .folder-list {
-  margin-top: 20px;
+  flex: 1; /* 占据剩余空间 */
+  overflow-y: auto; /* 添加滚动条 */
+  padding: 0 8px 8px;
+  max-height: 60vh; /* 限制最大高度 */
+}
+
+/* 上下布局，上面的内容靠上面，下面的内容靠下面 */
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* 使用视口高度 */
+  justify-content: space-between; /* 两端对齐 */
+}
+
+.button-container {
+  padding: 8px;
+  /* 移除margin-bottom设置 */
+}
+
+/* 在HTML body添加flex布局 */
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* 保持原有.button-container样式不变 */
+.button-container {
+  padding: 8px;
+  margin-bottom: auto; /* 确保按钮容器向上对齐 */
 }
 
 .folder-item {
@@ -119,6 +151,18 @@
   padding: 8px 16px;
   margin: 4px 0;
   background: var(--vscode-sideBar-background);
+  /* 保留原有样式 */
+  transition: background 0.2s ease;
+}
+
+.extension-item:hover {
+  background: var(--vscode-list-hoverBackground);
+  cursor: pointer;
+}
+
+/* 如果需要更明显的效果可以添加阴影 */
+.extension-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .extension-info {

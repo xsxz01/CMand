@@ -1,65 +1,79 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
 export class CmandWebview implements vscode.WebviewViewProvider {
-    private _view?: vscode.WebviewView;
+  private _view?: vscode.WebviewView;
 
-    constructor(private _context: vscode.ExtensionContext) { }
+  constructor(private _context: vscode.ExtensionContext) { }
 
-    resolveWebviewView(webviewView: vscode.WebviewView) {
-        this._view = webviewView;
+  resolveWebviewView(webviewView: vscode.WebviewView) {
+    this._view = webviewView;
 
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [this._context.extensionUri]
-        };
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [this._context.extensionUri]
+    };
 
-        webviewView.webview.html = this._getHtmlContent(webviewView.webview);
+    webviewView.webview.html = this._getHtmlContent(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(message => {
-            switch (message.command) {
-                case 'executeCommand':
-                    vscode.commands.executeCommand(`cmand.${message.action}`);
-                    break;
-            }
-        });
-    }
-
-    private _getHtmlContent(webview: vscode.Webview): string {
-        const styleUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._context.extensionUri, 'media', 'styles.css')
-        );
-        const codiconsUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._context.extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css')
-        );
-
-        return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <link href="${styleUri}" rel="stylesheet">
-      <link href="${codiconsUri}" rel="stylesheet" />
-    </head>
-    <script>
-      function toggleFolder(element) {
-        element.classList.toggle('collapsed');
-        const content = element.nextElementSibling;
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    webviewView.webview.onDidReceiveMessage(message => {
+      switch (message.command) {
+        case 'executeCommand':
+          vscode.commands.executeCommand(`cmand.${message.action}`);
+          break;
+        case 'buttonClick':
+          vscode.commands.executeCommand(`cmand.${message.action}`);
+          break;
       }
-    </script>
-    <body>
-      <div class="button-container">
-        ${this._createButton('打开项目', 'folder-opened')}
-        ${this._createButton('创建新项目', 'new-folder')}
-        ${this._createButton('构建', 'gear')}
-        ${this._createButton('调试', 'debug-alt')}
-        ${this._createButton('配置', 'settings-gear')}
+    });
+  }
+
+  private _getHtmlContent(webview: vscode.Webview): string {
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._context.extensionUri, 'media', 'styles.css')
+    );
+    const codiconsUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._context.extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css')
+    );
+
+    // 从外部文件加载基础HTML模板
+    const htmlPath = vscode.Uri.joinPath(this._context.extensionUri, 'media', 'cmand-webview.html');
+    let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf-8');
+
+    // 替换模板变量
+    return htmlContent
+      .replace('${STYLE_URI}', styleUri.toString())
+      .replace('${CODICONS_URI}', codiconsUri.toString())
+      .replace('${BUTTONS}', this._createButtonSection())
+      .replace('${FOLDER_LIST}', this._createFolderList());
+  }
+  private _createButtonSection(): string {
+    return [
+      this._createButton('打开项目', 'folder-opened'),
+      this._createButton('创建新项目', 'new-folder'),
+      this._createButton('构建', 'gear'),
+      this._createButton('调试', 'debug-alt'),
+      this._createButton('配置', 'settings-gear')
+    ].join('\n');
+  }
+
+  private _createFolderItem(folder: any): string {
+    return `
+    <div class="folder-container">
+      <div class="folder-header" onclick="toggleFolder(this)">
+        <span class="codicon codicon-chevron-right"></span>
+        <span class="folder-name">📁 ${folder.name} (${folder.version})</span>
+        ${this._createFolderActions(folder)}
       </div>
-      <div class="folder-list">
-      ${[
-        // 标准库
-      { 
-        name: '标准库', 
-        version: 'v1.2.3', 
+      ${this._createFolderContent(folder)}
+    </div>`;
+  }
+  private _createFolderList(): string {
+    return [
+      // 标准库
+      {
+        name: '标准库',
+        version: 'v1.2.3',
         items: [
           { name: '标准IO库', version: '1.2.3', author: 'CMand官方', description: '基础输入输出支持库', status: '已安装' },
           { name: '数学库', version: '2.1.0', author: 'CMand团队', description: '高级数学运算支持', status: '可更新' }
@@ -83,61 +97,61 @@ export class CmandWebview implements vscode.WebviewViewProvider {
           { name: '物联网模块', version: '1.2.3', author: 'IoT组', description: 'MQTT协议支持', status: '已安装' }
         ]
       }
-        // ... 其他文件夹数据类似 ...
-      ].map(folder => `
-        <div class="folder-container">
-          <div class="folder-header" onclick="toggleFolder(this)">
-            <span class="codicon codicon-chevron-right"></span>
-            <span class="folder-name">📁 ${folder.name} (${folder.version})</span>
-            <div class="folder-actions">
-              <button class="icon-button" data-folder="${folder.name}" data-action="add">
-                <span class="codicon codicon-plus"></span>
-              </button>
-              <button class="icon-button" data-folder="${folder.name}" data-action="settings">
-                <span class="codicon codicon-gear"></span>
-              </button>
-            </div>
-          </div>
-          <div class="folder-content">
-            ${folder.items.map(item => `
-              <div class="extension-item">
-                <div class="extension-info">
+    ].map(folder => this._createFolderItem(folder)).join('');
+  }
+
+  // 新增文件夹操作按钮生成方法
+  private _createFolderActions(folder: any): string {
+    return `
+  <div class="folder-actions">
+      <button class="icon-button" data-folder="${folder.name}" data-action="add">
+          <span class="codicon codicon-plus"></span>
+      </button>
+      <button class="icon-button" data-folder="${folder.name}" data-action="settings">
+          <span class="codicon codicon-gear"></span>
+      </button>
+  </div>`;
+  }
+
+  // 新增文件夹内容生成方法
+  private _createFolderContent(folder: any): string {
+    return `
+  <div class="folder-content">
+      ${folder.items.map((item: any) => `
+          <div class="extension-item">
+              <!-- 补充扩展信息部分 -->
+              <div class="extension-info">
                   <span class="codicon codicon-extensions"></span>
                   <div class="extension-meta">
-                    <div class="extension-title">
-                      <span>${item.name}</span>
-                      <span class="extension-version">${item.version}</span>
-                    </div>
-                    <div class="extension-author">${item.author}</div>
-                    <div class="extension-desc">${item.description}</div>
+                      <div class="extension-title">
+                          <span>${item.name}</span>
+                          <span class="extension-version">${item.version}</span>
+                      </div>
+                      <div class="extension-author">${item.author}</div>
+                      <div class="extension-desc">${item.description}</div>
                   </div>
-                </div>
-                <div class="extension-actions">
+              </div>
+              <div class="extension-actions">
                   <span class="status-label ${item.status === '已安装' ? 'installed' : 'update'}">
-                    ${item.status}
+                      ${item.status}
                   </span>
                   <button class="icon-button" data-action="settings">
-                    <span class="codicon codicon-gear"></span>
+                      <span class="codicon codicon-gear"></span>
                   </button>
                   <button class="icon-button" data-action="remove">
-                    <span class="codicon codicon-trash"></span>
+                      <span class="codicon codicon-trash"></span>
                   </button>
-                </div>
               </div>
-            `).join('')}
           </div>
-        </div>
       `).join('')}
-    </div>
-    </body>
-    </html>`;
-    }
+  </div>`;
+  }
 
-    private _createButton(label: string, icon: string): string {
-        return `
-    <button class="cmd-button" data-action="${label}">
-      <span class="codicon codicon-${icon}"></span>
-      <span>${label}</span>
-    </button>`;
-    }
+  private _createButton(label: string, icon: string): string {
+    return `
+  <button class="cmd-button" data-action="${label.toLowerCase().replace(' ', '-')}">
+    <span class="codicon codicon-${icon}"></span>
+    <span>${label}</span>
+  </button>`;
+  }
 }

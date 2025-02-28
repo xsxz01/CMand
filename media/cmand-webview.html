@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="${STYLE_URI}" rel="stylesheet">
+  <link href="${CODICONS_URI}" rel="stylesheet" />
+</head>
+<body>
+  <div class="panel-container">
+    <div class="button-container">
+        ${BUTTONS}
+      </div>
+      <div style="flex: 1; min-height: 8px;"></div>
+      <div class="folder-list">
+        ${FOLDER_LIST}
+      </div>
+  </div>
+  <script>
+    const vscode = acquireVsCodeApi(); // 初始化VS Code API
+    function toggleFolder(element) {
+      element.classList.toggle('collapsed');
+      const content = element.nextElementSibling;
+      content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+    (function() {
+      // 事件委托处理按钮点击
+      document.addEventListener('click', e => {
+        const button = e.target.closest('.cmd-button');
+        if (button) {
+          const action = button.dataset.action;
+          vscode.postMessage({
+            command: 'buttonClick',
+            action: action
+          });
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
