@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { openProject } from './OpenProject';
 import { CreateProjectPanel } from '../panels/CreateProjectPanel';
+import { ConfigProjectPanel } from '../panels/ConfigProjectPanel';
 export const CommandMapping: Map<string, Function> = new Map();
 
 // 初始化命令映射
@@ -14,9 +15,7 @@ export function initializeCommandMapping(context: vscode.ExtensionContext) {
     registerCommand('cmand.调试', () => {
         vscode.window.showInformationMessage(`执行操作: 调试`);
     });
-    registerCommand('cmand.配置', () => {
-        vscode.window.showInformationMessage(`执行操作: 配置`);
-    });
+    registerCommand('cmand.配置', () => ConfigProjectPanel.createOrShow(context));
     registerAllCommands(context);
 }
 

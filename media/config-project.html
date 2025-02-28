@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link href="${STYLE_URI}" rel="stylesheet">
+    <link rel="stylesheet" href="${WEBVIEW_URI}/codicon.css">
+    <style>
+        :root {
+            --vscode-font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            --vscode-button-background: #007acc;
+        }
+
+        body {
+            font-family: var(--vscode-font-family);
+            background-color: var(--vscode-editor-background);
+            color: var(--vscode-editor-foreground);
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* 新增分组样式 */
+        .form-section {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
+            padding-bottom: 16px;
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: var(--vscode-editor-foreground);
+        }
+
+        .form-section-header .icon {
+            font-size: 14px;
+            color: var(--vscode-icon-foreground);
+        }
+
+        .config-container {
+            display: flex;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .nav-sidebar {
+            width: 200px;
+            border-right: 1px solid var(--vscode-sideBarSectionHeader-border);
+        }
+
+        .nav-button {
+            width: 100%;
+            padding: 8px 16px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--vscode-sideBarTitle-foreground);
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 4px 0;
+        }
+
+        .nav-button.active {
+            background-color: var(--vscode-list-activeSelectionBackground);
+            color: var(--vscode-list-activeSelectionForeground);
+        }
+
+        .config-content {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .vscode-input {
+            width: 100%;
+            padding: 6px;
+            background-color: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 2px;
+            transition: border-color 0.2s ease;
+            font-size: 13px;
+        }
+
+        .vscode-input:focus {
+            border-color: var(--vscode-focusBorder);
+            outline: none;
+            box-shadow: 0 0 0 1px var(--vscode-focusBorder);
+        }
+
+        .save-button {
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .icon {
+            font-family: 'codicon';
+            margin-right: 8px;
+        }
+
+        select.vscode-input {
+            appearance: none;
+            padding: 5px 24px 5px 8px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='%23808080' d='M8 11L3 6h10l-5 5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            background-size: 12px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"].vscode-input {
+            width: 14px;
+            height: 14px;
+            margin: 0;
+            accent-color: var(--vscode-button-background);
+        }
+
+        textarea.vscode-input {
+            min-height: 80px;
+            padding: 8px;
+            resize: vertical;
+        }
+
+        /* 优化标签样式 */
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: block;
+            color: var(--vscode-editor-foreground);
+        }
+
+        /* 添加帮助文本 */
+        .help-text {
+            font-size: 12px;
+            color: var(--vscode-descriptionForeground);
+            margin-top: 4px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .browse-button {
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: 1px solid var(--vscode-button-secondaryBorder);
+            padding: 6px 12px;
+            /* 调整左右对称间距 */
+            border-radius: 2px;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            /* 新增flex布局 */
+            align-items: center;
+            /* 垂直居中 */
+            justify-content: center;
+            /* 水平居中 */
+        }
+
+        .browse-button .icon {
+            margin-right: 0;
+        }
+
+        .browse-button:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="config-header">
+        <h2>CMand 配置中心</h2>
+        <div class="config-context">
+            <span class="icon">&#xeb9f;</span>
+            当前配置模式：<span id="configScope">全局设置</span>
+            <span id="projectName" style="display: none;"></span>
+        </div>
+    </div>
+    <div class="config-container">
+        <nav class="nav-sidebar">
+            <button class="nav-button active" data-section="build">
+                <span class="icon">&#xeb46;</span>构建配置 <!-- 改为齿轮图标 -->
+            </button>
+            <button class="nav-button" data-section="debug">
+                <span class="icon">&#xead8;</span>调试设置 <!-- 改为虫子图标 -->
+            </button>
+            <button class="nav-button" data-section="link">
+                <span class="icon">&#xeac7;</span>链接选项 <!-- 更新为链接图标 -->
+            </button>
+            <button class="nav-button" data-section="resource">
+                <span class="icon">&#xeb70;</span>资源选项 <!-- 更新为文件图标 -->
+            </button>
+        </nav>
+
+        <div class="config-content">
+            <!-- 构建配置 -->
+            <div data-section="build">
+                <div class="form-section-header">
+                    <span class="icon">&#xeb46;</span>
+                    <h3>基本设置</h3>
+                </div>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>构建目录</label>
+                        <div class="input-group">
+                            <input class="vscode-input" type="text" id="buildDir" value="build">
+                            <button class="browse-button" data-target="buildDir" title="选择目录">
+                                <span class="icon">&#xea83;</span> <!-- folder图标 -->
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>编译器路径</label>
+                        <div class="input-group">
+                            <input class="vscode-input" type="text" id="compilerPath" value="/usr/bin/g++">
+                            <button class="browse-button" data-target="compilerPath" title="选择目录">
+                                <span class="icon">&#xea83;</span> <!-- folder图标 -->
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>输出文件路径</label>
+                        <div class="input-group">
+                            <input class="vscode-input" type="text" id="outputPath" value="bin/project">
+                            <button class="browse-button" data-target="outputPath" title="选择目录">
+                                <span class="icon">&#xea83;</span> <!-- folder图标 -->
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>优化等级</label>
+                        <select class="vscode-input" id="optimizationLevel">
+                            <option value="0">0 - 禁用优化</option>
+                            <option value="1">1 - 基础优化</option>
+                            <option value="2">2 - 推荐优化</option>
+                            <option value="3">3 - 激进优化</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>C++ 标准</label>
+                        <select class="vscode-input" id="cppStandard">
+                            <option value="c++11">C++11</option>
+                            <option value="c++14">C++14</option>
+                            <option value="c++17" selected>C++17</option>
+                            <option value="c++20">C++20</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <span class="icon">&#xeb9c;</span>
+                        <h3>输出设置</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>编译位数</label>
+                        <select class="vscode-input" id="architecture">
+                            <option value="x86">32 位</option>
+                            <option value="x86_64" selected>64 位</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>输出文件类型</label>
+                        <select class="vscode-input" id="projectType">
+                            <option value="nasm">NASM 汇编文件</option>
+                            <option value="static">静态库文件</option>
+                            <option value="executable" selected>可执行文件</option>
+                            <option value="dynamic">动态库文件</option>
+                            <option value="win32">窗口程序</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 调试配置 -->
+            <div data-section="debug" style="display: none;">
+                <div class="form-group">
+                    <label>调试端口</label>
+                    <input class="vscode-input" type="number" id="debugPort" value="9229">
+                </div>
+            </div>
+            <!-- 链接选项 -->
+            <div data-section="link" style="display: none;">
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="vscode-input" id="packageRelease">
+                        <span>发布版打包</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>链接动态库文件</label>
+                    <textarea class="vscode-input" id="linkedLibraries" rows="4"
+                        placeholder="每行一个库路径&#10;例如：lib/libmath.so&#10;/usr/lib/libssl.so"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="vscode-input" id="executableSlim">
+                        <span>可执行文件瘦身</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="vscode-input" id="executableCompress">
+                        <span>可执行文件压缩</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" class="vscode-input" id="maxCompression">
+                        <span>最大压缩率</span>
+                    </label>
+                </div>
+            </div>
+            <!-- 资源选项 -->
+            <div data-section="resource" style="display: none;">
+                <div class="form-group">
+                    <label>公司名称</label>
+                    <input class="vscode-input" type="text" id="companyName">
+                </div>
+                <div class="form-group">
+                    <label>文件描述</label>
+                    <input class="vscode-input" type="text" id="fileDescription">
+                </div>
+                <div class="form-group">
+                    <label>文件版本</label>
+                    <input class="vscode-input" type="text" id="fileVersion" placeholder="1.0.0.0">
+                </div>
+                <div class="form-group">
+                    <label>内部名称</label>
+                    <input class="vscode-input" type="text" id="internalName">
+                </div>
+                <div class="form-group">
+                    <label>版权信息</label>
+                    <input class="vscode-input" type="text" id="legalCopyright"
+                        placeholder="© 2024 Company Name. All rights reserved.">
+                </div>
+                <div class="form-group">
+                    <label>商标信息</label>
+                    <input class="vscode-input" type="text" id="legalTrademarks">
+                </div>
+                <div class="form-group">
+                    <label>原始文件名</label>
+                    <input class="vscode-input" type="text" id="originalFilename">
+                </div>
+                <div class="form-group">
+                    <label>产品名称</label>
+                    <input class="vscode-input" type="text" id="productName">
+                </div>
+                <div class="form-group">
+                    <label>产品版本</label>
+                    <input class="vscode-input" type="text" id="productVersion" placeholder="1.0.0.0">
+                </div>
+                <div class="form-group">
+                    <label>文件图标路径</label>
+                    <input class="vscode-input" type="text" id="iconPath" placeholder="res/icon.ico">
+                </div>
+                <div class="form-group">
+                    <label>资源文件路径</label>
+                    <input class="vscode-input" type="text" id="resourcePath" placeholder="res/version.rc">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-button" id="saveButton">
+        <span class="icon">&#xeb7b;</span>保存配置 <!-- 改为勾选图标 -->
+    </button>
+
+    <script>
+        (function () {
+            // 新增初始化逻辑
+            const vscode = acquireVsCodeApi();
+            // 接收配置上下文
+            window.addEventListener('message', event => {
+                if (event.data.type === 'CONFIG_CONTEXT') {
+                    const { isGlobal, projectName } = event.data;
+                    document.getElementById('configScope').textContent =
+                        isGlobal ? '全局设置' : '项目配置';
+                    const projectEl = document.getElementById('projectName');
+                    if (!isGlobal) {
+                        projectEl.textContent = `项目名称：${projectName}`;
+                        projectEl.style.display = 'inline';
+                    }
+                }
+            });
+            // 请求配置上下文
+            vscode.postMessage({ type: 'REQUEST_CONTEXT' });
+            // 选项卡切换
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-button').forEach(btn =>
+                        btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const section = button.dataset.section;
+                    // 修正选择器：只操作配置内容区块
+                    document.querySelectorAll('.config-content [data-section]').forEach(content =>
+                        content.style.display = 'none');
+                    document.querySelector(`.config-content [data-section="${section}"]`).style.display = 'block';
+                });
+            });
+            // 处理浏览文件
+            document.querySelectorAll('.browse-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    vscode.postMessage({
+                        type: 'BROWSE_PATH',
+                        target: targetId,
+                        isDirectory: button.title.includes('目录')
+                    });
+                });
+            });
+
+            // 处理路径选择结果
+            window.addEventListener('message', event => {
+                if (event.data.type === 'BROWSE_RESULT') {
+                    const input = document.getElementById(event.data.target);
+                    if (input) input.value = event.data.path;
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
