@@ -1,0 +1,180 @@
+.folder-list {
+  margin-top: 20px;
+}
+
+.folder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.folder-name {
+  color: var(--vscode-foreground);
+}
+
+
+.folder-action {
+  background: none;
+  border: none;
+  color: var(--vscode-icon-foreground);
+  cursor: pointer;
+  padding: 2px 8px;
+}
+.cmd-button {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: 1px solid var(--vscode-button-border);
+    border-radius: 3px;
+    padding: 8px 12px;
+    margin: 4px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    font-family: var(--vscode-font-family);
+  }
+  .cmd-button:hover {
+    background: var(--vscode-button-hoverBackground);
+  }
+  .cmd-button:active {
+    transform: translateY(1px);
+  }
+  .codicon {
+    font-size: 16px;
+  }
+  .button-container {
+    padding: 8px;
+  }
+/* 文件夹容器 */
+.folder-container {
+  margin: 8px 0;
+  border: 1px solid var(--vscode-sideBarSectionHeader-border);
+  border-radius: 3px;
+}
+
+/* 文件夹头部 */
+.folder-header {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  background: var(--vscode-sideBarSectionHeader-background);
+  cursor: pointer;
+}
+
+/* 文件夹名称 */
+.folder-name {
+  flex: 1;
+  margin-left: 6px;
+  color: var(--vscode-foreground);
+}
+
+/* 操作按钮容器 */
+.folder-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* 图标按钮 */
+.icon-button {
+  background: none;
+  border: none;
+  color: var(--vscode-icon-foreground);
+  padding: 2px;
+  cursor: pointer;
+}
+
+/* 文件夹内容 */
+.folder-content {
+  padding: 4px 0;
+  display: block;
+}
+
+/* 文件夹子项 */
+.folder-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 24px;
+  color: var(--vscode-foreground);
+}
+
+/* 折叠状态 */
+.collapsed .codicon-chevron-right {
+  transform: rotate(0);
+}
+
+/* 展开状态 */
+.codicon-chevron-right {
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+/* 扩展项样式 */
+.extension-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  margin: 4px 0;
+  background: var(--vscode-sideBar-background);
+}
+
+.extension-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.extension-meta {
+  flex: 1;
+}
+
+.extension-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--vscode-foreground);
+}
+
+.extension-version {
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+}
+
+.extension-author {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  margin-top: 2px;
+}
+
+.extension-desc {
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  margin-top: 4px;
+}
+
+.extension-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-label {
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.installed {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.update {
+  background: var(--vscode-extensionButton-prominentBackground);
+  color: var(--vscode-extensionButton-prominentForeground);
+}
