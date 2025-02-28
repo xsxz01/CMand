@@ -1,6 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="6" fill="#4788d4"/>
-  <path d="M8 9.5L12 16 8 22.5h3l3-6.5 3 6.5h3l-4-6.5 4-6.5h-3l-3 6.5-3-6.5z" fill="#fff"/>
-  <path d="M20 9.5h3v13h-3z" fill="#fff"/>
-  <path d="M23 14.5l3 3-3 3v-6z" fill="#fff"/>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <!-- 黑色圆角矩形边框 -->
+    <rect x="10" y="10" width="108" height="108" rx="25" ry="25" 
+          fill="none" stroke="black" stroke-width="12"/>
+    
+    <!-- 等高等粗双字母 -->
+    <text x="50%" y="60%" font-family="Consolas"
+          font-size="80" font-weight="900"
+          text-anchor="middle" fill="black">
+        CM
+    </text>
 </svg>
