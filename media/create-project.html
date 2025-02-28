@@ -3,7 +3,7 @@
 
 <head>
     <link href="${STYLE_URI}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codicons/0.0.5/codicon.min.css">
+    <link rel="stylesheet" href="${WEBVIEW_URI}/codicon.css">
 </head>
 
 <body>
@@ -34,35 +34,19 @@
             </div>
         </div>
 
-        <!-- 修改表单容器增加模板预览 -->
-        <div class="form-container">
-            <div class="form-header">
-                <span class="codicon codicon-wand"></span>
-                <h2>项目配置向导</h2>
-            </div>
-
-            <!-- 在项目类型选择后添加模板预览 -->
-            <div id="templatePreview" class="template-preview">
-                <div class="preview-content" data-template="console">
-                    <h4>控制台应用模板</h4>
-                    <pre>// 示例代码
-程序 主函数：
-    打印("你好世界")
-    返回 0</pre>
-                </div>
-                <!-- 其他模板预览内容... -->
-            </div>
-        </div>
-
         <!-- 优化后的表单容器 -->
         <div class="form-container">
             <div class="form-group">
                 <label>项目位置</label>
-                <div class="path-selector">
-                    <input type="text" class="vscode-input" id="projectPath" placeholder="请选择项目存储路径" title="项目存储位置">
-                    <button class="vscode-button" id="browseButton">
-                        <span class="codicon codicon-folder"></span>
-                        浏览
+                <div class="path-selector" style="display: grid; grid-template-columns: 1fr auto; gap: 8px;">
+                    <input type="text" class="vscode-input" id="projectPath" 
+                           style="min-width: 240px;" readonly
+                           placeholder="请选择项目存储路径" 
+                           title="项目存储位置">
+                    <button class="vscode-button" id="browseButton" 
+                            style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;">
+                        <span class="codicon codicon-folder" style="font-size: 1.1em;"></span>
+                        <span style="white-space: nowrap;">浏览</span>
                     </button>
                 </div>
             </div>
@@ -120,14 +104,6 @@
                     template: document.getElementById('projectTemplate').value
                 };
                 vscode.postMessage({ command: 'createProject', data: projectData });
-            });
-
-            document.getElementById('projectTemplate').addEventListener('change', (e) => {
-                const previews = document.querySelectorAll('.preview-content');
-                previews.forEach(p => p.style.display = 'none');
-
-                const selected = document.querySelector(`[data-template="${e.target.value}"]`);
-                if (selected) selected.style.display = 'block';
             });
         })();
     </script>

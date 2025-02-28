@@ -19,6 +19,9 @@ export class CreateProjectPanel {
     }
 
     private _getWebviewContent(context: vscode.ExtensionContext): string {
+        const codiconUri = this._panel.webview.asWebviewUri(
+            vscode.Uri.joinPath(context.extensionUri, 'node_modules', '@vscode/codicons', 'dist')
+        );
         const templatePath = path.join(context.extensionPath, 'media', 'create-project.html');
         let html = fs.readFileSync(templatePath, 'utf-8');
 
@@ -26,7 +29,8 @@ export class CreateProjectPanel {
             vscode.Uri.joinPath(context.extensionUri, 'media', 'webview.css')
         );
 
-        return html.replace('${STYLE_URI}', cssUri.toString());
+        return html.replace('${STYLE_URI}', cssUri.toString())
+                    .replace('${WEBVIEW_URI}', codiconUri.toString());
     }
 
     private _setupWebviewHooks(context: vscode.ExtensionContext) {
@@ -49,7 +53,7 @@ export class CreateProjectPanel {
 
     private async _handleProjectCreation(data: any) {
         try {
-            const projectPath = await this._validateAndGetPath(data.name);
+            const projectPath = await this._validateAndGetPath(data);
             await this._createProjectStructure(projectPath, data.template);
             vscode.window.showInformationMessage(`项目 ${data.name} 创建成功`, {
                 modal: true
@@ -62,6 +66,7 @@ export class CreateProjectPanel {
     }
 
     private async _validateAndGetPath(data: any): Promise<string> {
+        console.log("获取到的参数",data);
         // 合并名称验证和路径验证
         if (!/^[a-zA-Z0-9_-]+$/.test(data.name)) {
             throw new Error('项目名称只能包含字母、数字、下划线和连字符');
