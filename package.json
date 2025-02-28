@@ -32,6 +32,11 @@
       {
         "command": "cmand.配置",
         "title": "配置"
+      },
+      {
+        "command": "cmand.创建新项目",
+        "title": "创建新项目",
+        "category": "CMand"
       }
     ],
     "viewsContainers": {
@@ -51,8 +56,18 @@
           "name": "CMand面板",
           "contextualTitle": "CMand操作面板"
         }
+      ],
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "cmand.createProject",
+          "name": "新建项目向导"
+        }
       ]
-    }
+    },
+    "activationEvents": [
+      "onCommand:cmand.创建新项目"
+    ]
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",

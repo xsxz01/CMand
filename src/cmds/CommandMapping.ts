@@ -1,17 +1,13 @@
 // 定义命令映射
 import * as vscode from 'vscode';
 import { openProject } from './OpenProject';
+import { CreateProjectPanel } from '../panels/CreateProjectPanel';
 export const CommandMapping: Map<string, Function> = new Map();
 
 // 初始化命令映射
 export function initializeCommandMapping(context: vscode.ExtensionContext) {
-    registerCommand('cmand.打开项目', () => {
-        // 调用打开文件夹的API, 并判断文件夹内是否有package.json文件，如果有则打开，如果没有则提示用户
-        openProject();
-    });
-    registerCommand('cmand.创建新项目', () => {
-        vscode.window.showInformationMessage(`执行操作: 创建新项目`);
-    });
+    registerCommand('cmand.打开项目', () => openProject());
+    registerCommand('cmand.创建新项目', () => CreateProjectPanel.createOrShow(context));
     registerCommand('cmand.构建', () => {
         vscode.window.showInformationMessage(`执行操作: 构建`);
     });
