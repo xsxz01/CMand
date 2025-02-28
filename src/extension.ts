@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { CmandWebview } from './CmandWebview';
-import { initializeCommandMapping, registerAllCommands } from './CommandMapping';
+import { initializeCommandMapping, registerAllCommands } from './cmds/CommandMapping';
 
 export function activate(context: vscode.ExtensionContext) {
   // 注册Webview视图
