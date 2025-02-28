@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { CmandWebview } from './CmandWebview';
+import { initializeCommandMapping, registerAllCommands } from './CommandMapping';
 
 export function activate(context: vscode.ExtensionContext) {
   // 注册Webview视图
@@ -9,14 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // 注册命令
-  const commands = ['打开项目', '创建新项目', '构建', '调试', '配置'];
-  commands.forEach(command => {
-    context.subscriptions.push(
-      vscode.commands.registerCommand(`cmand.${command}`, () => {
-        vscode.window.showInformationMessage(`执行操作: ${command}`);
-      })
-    );
-  });
+  initializeCommandMapping(context);
 }
 
 export function deactivate() {}
