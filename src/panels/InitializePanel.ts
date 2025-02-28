@@ -85,6 +85,9 @@ export class InitializePanel {
                         this.navigateToStep(2); // 保持停留在步骤2
                     }
                     break;
+                case 'SHOW_ERROR':
+                    vscode.window.showErrorMessage(message.message);
+                    break;
             }
         });
     }
@@ -108,7 +111,13 @@ export class InitializePanel {
 
         await vscode.workspace.getConfiguration('cmand')
             .update('compilerPath', selected[0].fsPath, true);
-            
+        
+        // 设置系统环境变量并通知系统
+        process.env.GMC_HOME = selected[0].fsPath;
+        const env = Object.assign({}, process.env);
+        env.GMC_HOME = selected[0].fsPath;
+        env.PATH = `%GMC_HOME%;${env.PATH}`;
+        require('child_process').spawn('cmd.exe', ['/c', 'setx', 'GMC_HOME', selected[0].fsPath, '/m'], { env });
         return true;
     }
 

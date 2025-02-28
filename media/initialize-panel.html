@@ -300,13 +300,12 @@
             });
         }
         function submitLogin() {
-            // const username = document.getElementById('username').value;
-            // const password = document.getElementById('password').value;
-            // window.postMessage({
-            //     type: 'SUBMIT_LOGIN',
-            //     data: { username, password }
-            // });
-            navigateToStep(2);
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            vscode.postMessage({
+                type: 'SUBMIT_LOGIN',
+                data: { username, password }
+            });
         }
 
         function selectCompiler() {

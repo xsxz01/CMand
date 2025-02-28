@@ -15,14 +15,14 @@
     "configuration": {
       "title": "CMand",
       "properties": {
-        "cmand.userAccount": {
-          "type": "string",
-          "description": "用户登录账号（邮箱格式）"
-        },
         "cmand.compilerPath": {
           "type": "string",
           "description": "编译器安装目录（需包含gmc.exe）",
           "default": "C:\\Program Files\\CMand\\bin"
+        },
+        "cmand.userAccount": {
+          "type": "string",
+          "description": "用户登录账号（邮箱格式）"
         },
         "cmand.password": {
           "type": "string",
