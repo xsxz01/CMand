@@ -19,7 +19,7 @@ export async function openProject() {
     const packageJsonPath = path.join(projectPath, 'package.json');
 
     if (fs.existsSync(packageJsonPath)) {
-        await vscode.commands.executeCommand('vscode.openFolder', folderUri[0], true);
+        await vscode.commands.executeCommand('vscode.openFolder', folderUri[0], false);
     } else {
         vscode.window.showWarningMessage(
             '该文件夹不是有效的CMand项目（未找到package.json）',

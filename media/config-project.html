@@ -19,7 +19,7 @@
             margin: 0;
         }
 
-        /* 新增分组样式 */
+        /* Form section styles */
         .form-section {
             margin-bottom: 32px;
             border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);
@@ -147,7 +147,7 @@
             color: var(--vscode-editor-foreground);
         }
 
-        /* 添加帮助文本 */
+        /* Help text styles */
         .help-text {
             font-size: 12px;
             color: var(--vscode-descriptionForeground);
@@ -164,16 +164,12 @@
             color: var(--vscode-button-secondaryForeground);
             border: 1px solid var(--vscode-button-secondaryBorder);
             padding: 6px 12px;
-            /* 调整左右对称间距 */
             border-radius: 2px;
             cursor: pointer;
             white-space: nowrap;
             display: inline-flex;
-            /* 新增flex布局 */
             align-items: center;
-            /* 垂直居中 */
             justify-content: center;
-            /* 水平居中 */
         }
 
         .browse-button .icon {
@@ -195,9 +191,26 @@
             <span id="projectName" style="display: none;"></span>
         </div>
     </div>
-    <div class="config-container">
+    <div class="missing-package" id="missing-package">
+        <div class="alert">
+            <span class="codicon codicon-warning"></span>
+            <div class="alert-content">
+                <h3>未找到package.json</h3>
+                <p>当前工作区没有package.json文件，需要先创建基础配置才能继续。</p>
+                <button id="create-package-btn" class="vscode-button">
+                    <span class="codicon codicon-new-file"></span>
+                    创建package.json
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-container" id="config-container">
         <nav class="nav-sidebar">
-            <button class="nav-button active" data-section="build">
+            <button class="nav-button active" data-section="project">
+                <span class="icon">&#xeb46;</span>项目配置 <!-- 改为齿轮图标 -->
+            </button>
+            <button class="nav-button" data-section="build">
                 <span class="icon">&#xeb46;</span>构建配置 <!-- 改为齿轮图标 -->
             </button>
             <button class="nav-button" data-section="debug">
@@ -212,8 +225,50 @@
         </nav>
 
         <div class="config-content">
+            <!-- 项目配置 -->
+            <div data-section="project">
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>项目名称</label>
+                        <input class="vscode-input" type="text" id="name" value="MyProject">
+                    </div>
+                    <div class="form-group">
+                        <label>项目描述</label>
+                        <input class="vscode-input" type="text" id="description" value="A simple C++ project">
+                    </div>
+                    <div class="form-group">
+                        <label>项目版本</label>
+                        <input class="vscode-input" type="text" id="version" value="1.0.0">
+                    </div>
+                    <!--项目入口点-->
+                    <div class="form-group">
+                        <label>项目入口点</label>
+                        <input class="vscode-input" type="text" id="main" value="src/main.cpp">
+                    </div>
+                    <div class="form-group">
+                        <label>关键字</label>
+                        <input class="vscode-input" type="text" id="keywords" value="C++, project">
+                    </div>
+                    <div class="form-group">
+                        <label>作者</label>
+                        <input class="vscode-input" type="text" id="author" value="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>许可证</label>
+                        <input class="vscode-input" type="text" id="license" value="MIT">
+                    </div>
+                    <div class="form-group">
+                        <label>仓库地址</label>
+                        <input class="vscode-input" type="text" id="repository" value="Repository">
+                    </div>
+                    <div class="form-group">
+                        <label>项目主页</label>
+                        <input class="vscode-input" type="text" id="homepage" value="Homepage">
+                    </div>
+                </div>
+            </div>
             <!-- 构建配置 -->
-            <div data-section="build">
+            <div data-section="build" style="display: none;">
                 <div class="form-section-header">
                     <span class="icon">&#xeb46;</span>
                     <h3>基本设置</h3>
@@ -230,9 +285,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>编译器路径</label>
+                        <label>编译器路径(为空则继承插件编译器路径)</label>
                         <div class="input-group">
-                            <input class="vscode-input" type="text" id="compilerPath" value="/usr/bin/g++">
+                            <input class="vscode-input" type="text" id="compilerPath" value="">
                             <button class="browse-button" data-target="compilerPath" title="选择目录">
                                 <span class="icon">&#xea83;</span> <!-- folder图标 -->
                             </button>
@@ -240,12 +295,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label>输出文件路径</label>
+                        <label>输出文件名</label>
                         <div class="input-group">
-                            <input class="vscode-input" type="text" id="outputPath" value="bin/project">
-                            <button class="browse-button" data-target="outputPath" title="选择目录">
-                                <span class="icon">&#xea83;</span> <!-- folder图标 -->
-                            </button>
+                            <input class="vscode-input" type="text" id="outputFileName" value="project.exe">
                         </div>
                     </div>
 
@@ -390,7 +442,7 @@
     </div>
 
     <button class="save-button" id="saveButton">
-        <span class="icon">&#xeb7b;</span>保存配置 <!-- 改为勾选图标 -->
+        <span class="icon">&#xeb7b;</span>保存配置
     </button>
 
     <script>
@@ -407,8 +459,97 @@
                     if (!isGlobal) {
                         projectEl.textContent = `项目名称：${projectName}`;
                         projectEl.style.display = 'inline';
+                        // 检查package.json状态
+                        vscode.postMessage({ type: 'CHECK_PACKAGE_JSON' });
                     }
                 }
+                if (event.data.type === 'PACKAGE_JSON_STATUS') {
+                    console.log('json 是否存在', event.data);
+                    const hasPackage = event.data.exists;
+                    document.querySelector('.missing-package').style.display = hasPackage ? 'none' : 'block';
+                    document.querySelector('.config-container').style.display = hasPackage ? 'flex' : 'none';
+                    if (hasPackage) {
+                        vscode.postMessage({ type: 'REQUEST_CONFIG' });
+                    }
+                }
+                if (event.data.type === 'PACKAGE_JSON_DATA') {
+                    const config = event.data.data;
+                    console.log('收到配置', config);
+                    // 遍历配置，设置到对应的输入框
+                    for (const key in config) {
+                        // 顶级节点直接设置
+                        if (['name', 'description', 'version', 'main', 'keywords', 'author', 'license', 'repository', 'homepage'].includes(key)) {
+                            const input = document.getElementById(key);
+                            if (input) input.value = config[key];
+                        }
+                        let sectionConfig = config['config'];
+                        if (sectionConfig) {
+                            for (const sectionKey in sectionConfig) {
+                                const linkConfig = sectionConfig['link'];
+                                const buildConfig = sectionConfig['build'];
+                                const debugConfig = sectionConfig['debug'];
+                                const resourceConfig = sectionConfig['resource'];
+                                if (linkConfig) {
+                                    for (const linkKey in linkConfig) {
+                                        // 处理链接选项中的checkbox
+                                        console.log('linkKey', linkKey, linkConfig[linkKey]);
+                                        if (['packageRelease', 'executableSlim', 'executableCompress', 'maxCompression'].includes(linkKey)) {
+                                            const checkbox = document.getElementById(linkKey);
+                                            if (checkbox) {
+                                                checkbox.checked = linkConfig[linkKey] == 'on';
+                                            }
+                                        }
+                                        // 处理链接选项中的其他配置
+                                        else {
+                                            const input = document.getElementById(linkKey);  
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (event.data.type === 'PACKAGE_JSON_CREATED') {
+                    if (event.data.success) {
+                        vscode.postMessage({ type: 'CHECK_PACKAGE_JSON' });
+                    } else {
+                        vscode.postMessage({
+                            type: 'SHOW_ERROR',
+                            message: '创建package.json失败: ' + event.data.error
+                        });
+                    }
+                }
+            });
+            // 保存配置
+            document.getElementById('saveButton').addEventListener('click', () => {
+                const config = {};
+                const inputs = document.querySelectorAll('.vscode-input');
+                // 要求项目配置在顶级节点，其余的在各自的section下
+                inputs.forEach(input => {
+                    // 在project下的配置全部放到顶级
+                    if (
+                        input.id === 'name' ||
+                        input.id === 'description' ||
+                        input.id === 'version' ||
+                        input.id === 'main' ||
+                        input.id === 'keywords' ||
+                        input.id === 'author' ||
+                        input.id === 'license' ||
+                        input.id === 'repository' ||
+                        input.id === 'homepage'
+
+                    ) {
+                        config[input.id] = input.value;
+                    }
+                    // 其他的配置放到各自的section下
+                    else {
+                        const section = input.closest('[data-section]').dataset.section;
+                        if (!config[section]) config[section] = {};
+                        config[section][input.id] = input.value;
+                    }
+                })
+                console.log('保存配置', config);
+                vscode.postMessage({ type: 'SAVE_CONFIG', config });
             });
             // 请求配置上下文
             vscode.postMessage({ type: 'REQUEST_CONTEXT' });
@@ -444,6 +585,11 @@
                     const input = document.getElementById(event.data.target);
                     if (input) input.value = event.data.path;
                 }
+            });
+
+            // 处理创建package.json按钮
+            document.getElementById('create-package-btn').addEventListener('click', () => {
+                vscode.postMessage({ type: 'CREATE_PACKAGE_JSON' });
             });
         })();
     </script>

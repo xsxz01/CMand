@@ -128,6 +128,11 @@ export class InitializePanel {
 
         // 检查环境变量
         const hasGmcHome = !!process.env.GMC_HOME;
+        if (hasGmcHome) {
+           // 更新编译器路径
+           await vscode.workspace.getConfiguration('cmand')
+              .update('compilerPath', process.env.GMC_HOME, true); 
+        }
         this._panel.webview.postMessage({
             type: 'NAVIGATE',
             step: hasGmcHome ? 3 : 2

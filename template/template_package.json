@@ -1,0 +1,20 @@
+{
+    "name": "template_package",
+    "description": "template_package",
+    "author": "template_package",
+    "version": "1.0.0",
+    "main": "template_package.cm",
+    "dependencies": {
+        "template_package": "1.0.0"
+    },
+    "commands": [
+        {
+            "name": "build",
+            "params": [
+                {
+                    "-o": "template_package.exe"
+                } 
+            ]
+        }
+    ]
+}
