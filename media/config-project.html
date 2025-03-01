@@ -482,28 +482,27 @@
                             const input = document.getElementById(key);
                             if (input) input.value = config[key];
                         }
-                        let sectionConfig = config['config'];
-                        if (sectionConfig) {
-                            for (const sectionKey in sectionConfig) {
-                                const linkConfig = sectionConfig['link'];
-                                const buildConfig = sectionConfig['build'];
-                                const debugConfig = sectionConfig['debug'];
-                                const resourceConfig = sectionConfig['resource'];
-                                if (linkConfig) {
-                                    for (const linkKey in linkConfig) {
-                                        // 处理链接选项中的checkbox
-                                        console.log('linkKey', linkKey, linkConfig[linkKey]);
-                                        if (['packageRelease', 'executableSlim', 'executableCompress', 'maxCompression'].includes(linkKey)) {
-                                            const checkbox = document.getElementById(linkKey);
-                                            if (checkbox) {
-                                                checkbox.checked = linkConfig[linkKey] == 'on';
-                                            }
-                                        }
-                                        // 处理链接选项中的其他配置
-                                        else {
-                                            const input = document.getElementById(linkKey);  
-                                        }
+                        // 其他配置在各自的section下
+                        const buildConfig = config.build;
+                        if (buildConfig && ['buildDir', 'compilerPath', 'outputFileName', 'optimizationLevel', 'cppStandard', 'architecture', 'projectType'].includes(key)) {
+                            const input = document.getElementById(key);
+                            if (input) input.value = buildConfig[key];
+                        }
+                        const linkConfig = config.link;
+                        console.log('linkConfig', linkConfig);
+                        if (linkConfig) {
+                            for (const linkKey in linkConfig) {
+                                // 处理其中的checkbox
+                                console.log('linkKey', linkKey, linkConfig[linkKey]);
+                                if (['packageRelease', 'executableSlim', 'executableCompress', 'maxCompression'].includes(linkKey)) {
+                                    console.log('checkbox', linkKey, linkConfig[linkKey]);
+                                    const checkbox = document.getElementById(linkKey);
+                                    if (checkbox) {
+                                        checkbox.checked = linkConfig[linkKey] == "on";
                                     }
+                                } else if (['linkedLibraries'].includes(linkKey)) {
+                                    const textarea = document.getElementById(linkKey);
+                                    if (textarea) textarea.value = linkConfig[linkKey];
                                 }
                             }
                         }
@@ -543,9 +542,50 @@
                     }
                     // 其他的配置放到各自的section下
                     else {
-                        const section = input.closest('[data-section]').dataset.section;
-                        if (!config[section]) config[section] = {};
-                        config[section][input.id] = input.value;
+                        // 保存link
+                        config.link = config.link || {};
+                        if (input.id === 'packageRelease' ||
+                            input.id === 'executableSlim' ||
+                            input.id === 'executableCompress' ||
+                            input.id === 'maxCompression'
+                        ) {
+                            config.link[input.id] = input.checked ? "on" : "off";
+                        } else if (input.id === 'linkedLibraries') {
+                            config.link[input.id] = input.value;
+                        }
+                        // 保存build
+                        config.build = config.build || {};
+                        if (input.id === 'buildDir' ||
+                            input.id === 'compilerPath' ||
+                            input.id === 'outputFileName' ||
+                            input.id === 'optimizationLevel' ||
+                            input.id === 'cppStandard' ||
+                            input.id === 'architecture' ||
+                            input.id === 'projectType'
+                        ) {
+                            config.build[input.id] = input.value;
+                        }
+                        // 保存resource
+                        config.resource = config.resource || {};
+                        if (input.id === 'companyName' ||
+                            input.id === 'fileDescription' ||
+                            input.id === 'fileVersion' ||
+                            input.id === 'internalName' ||
+                            input.id === 'legalCopyright' ||
+                            input.id === 'legalTrademarks' ||
+                            input.id === 'originalFilename' ||
+                            input.id === 'productName' ||
+                            input.id === 'productVersion' ||
+                            input.id === 'iconPath' ||
+                            input.id === 'resourcePath'
+                        ) {
+                            config.resource[input.id] = input.value;
+                        }
+                        // 保存debug
+                        config.debug = config.debug || {};
+                        if (input.id === 'debugPort') {
+                            config.debug[input.id] = input.value;
+                        }
                     }
                 })
                 console.log('保存配置', config);

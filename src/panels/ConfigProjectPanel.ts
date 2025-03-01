@@ -76,8 +76,12 @@ export class ConfigProjectPanel {
                     const packageJsonPath = path.join(workspacePath, 'package.json');
                     const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
                     const packageJsonData = JSON.parse(packageJsonContent);
-                    // 合并配置
-                    packageJsonData['config'] = message.config;
+                    // 更新配置
+                    let targetConfig = message.config;
+                    let currentConfig = packageJsonData;
+                    for (let key in targetConfig) {
+                        currentConfig[key] = targetConfig[key];
+                    }
                     // 保存配置
                     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJsonData, null, 2));
                     // 提示保存成功
@@ -105,6 +109,7 @@ export class ConfigProjectPanel {
                     const workspacePath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
                     if (workspacePath) {
                         const packageJsonPath = path.join(workspacePath, 'package.json');
+                        console.log("packageJsonPath", packageJsonPath);
                         const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf8');
                         const packageJsonData = JSON.parse(packageJsonContent);
                         this._panel.webview.postMessage({
