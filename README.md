@@ -1,71 +1,98 @@
-# cmand README
+<div align="center" id="top"> 
+  <img src="./.github/app.gif" alt="Cmand" />
 
-This is the README for your extension "cmand". After writing up a brief description, we recommend including the following sections.
+  &#xa0;
 
-## Features
+  <!-- <a href="https://cmand.netlify.app">Demo</a> -->
+</div>
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+<h1 align="center">Cmand</h1>
 
-For example if there is an image subfolder under your extension project workspace:
+<p align="center">
+  <img alt="Github top language" src="https://img.shields.io/github/languages/top/xsxz01/cmand?color=56BEB8">
 
-\!\[feature X\]\(images/feature-x.png\)
+  <img alt="Github language count" src="https://img.shields.io/github/languages/count/xsxz01/cmand?color=56BEB8">
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/xsxz01/cmand?color=56BEB8">
 
-## Requirements
+  <img alt="License" src="https://img.shields.io/github/license/xsxz01/cmand?color=56BEB8">
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+  <!-- <img alt="Github issues" src="https://img.shields.io/github/issues/xsxz01/cmand?color=56BEB8" /> -->
 
-## Extension Settings
+  <!-- <img alt="Github forks" src="https://img.shields.io/github/forks/xsxz01/cmand?color=56BEB8" /> -->
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+  <!-- <img alt="Github stars" src="https://img.shields.io/github/stars/xsxz01/cmand?color=56BEB8" /> -->
+</p>
 
-For example:
+<!-- Status -->
 
-This extension contributes the following settings:
+<!-- <h4 align="center"> 
+	🚧  Cmand 🚀 Under construction...  🚧
+</h4> 
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+<hr> -->
 
-## Known Issues
+<p align="center">
+  <a href="#dart-about">About</a> &#xa0; | &#xa0; 
+  <a href="#sparkles-features">Features</a> &#xa0; | &#xa0;
+  <a href="#rocket-technologies">Technologies</a> &#xa0; | &#xa0;
+  <a href="#white_check_mark-requirements">Requirements</a> &#xa0; | &#xa0;
+  <a href="#checkered_flag-starting">Starting</a> &#xa0; | &#xa0;
+  <a href="#memo-license">License</a> &#xa0; | &#xa0;
+  <a href="https://github.com/xsxz01" target="_blank">Author</a>
+</p>
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+<br>
 
-## Release Notes
+## :dart: About ##
 
-Users appreciate release notes as you update your extension.
+Describe your project
 
-### 1.0.0
+## :sparkles: Features ##
 
-Initial release of ...
+:heavy_check_mark: Feature 1;\
+:heavy_check_mark: Feature 2;\
+:heavy_check_mark: Feature 3;
 
-### 1.0.1
+## :rocket: Technologies ##
 
-Fixed issue #.
+The following tools were used in this project:
 
-### 1.1.0
+- [Expo](https://expo.io/)
+- [Node.js](https://nodejs.org/en/)
+- [React](https://pt-br.reactjs.org/)
+- [React Native](https://reactnative.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
 
-Added features X, Y, and Z.
+## :white_check_mark: Requirements ##
 
----
+Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) and [Node](https://nodejs.org/en/) installed.
 
-## Following extension guidelines
+## :checkered_flag: Starting ##
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+```bash
+# Clone this project
+$ git clone https://github.com/xsxz01/cmand
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+# Access
+$ cd cmand
 
-## Working with Markdown
+# Install dependencies
+$ yarn
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+# Run the project
+$ yarn start
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+# The server will initialize in the <http://localhost:3000>
+```
 
-## For more information
+## :memo: License ##
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+This project is under license from MIT. For more details, see the [LICENSE](LICENSE.md) file.
 
-**Enjoy!**
+
+Made with :heart: by <a href="https://github.com/xsxz01" target="_blank">Pang</a>
+
+&#xa0;
+
+<a href="#top">Back to top</a>
