@@ -132,7 +132,7 @@ export async function buildProject() {
         buildParam += `-w `;
     }
     // 输出文件名
-    buildParam += `-o ${outputDir}\\${outputFileName} `;
+    buildParam += `-o ${buildDir}/${outputFileName} `;
 
     const command = `${compilerPath} ${linkParam} ${buildParam} ${main}`;
     try {
@@ -151,32 +151,81 @@ export async function buildProject() {
                 vscode.window.showWarningMessage(`编译警告: ${stderr}`);
                 outputChannel.appendLine(stderr);
             }
-            vscode.window.showInformationMessage('编译成功');
 
             // 然后执行该文件，并且将程序输出指定到vscode的输出窗口
             outputChannel.appendLine(stdout);
-
+            // 显示编译成功
+            vscode.window.showInformationMessage('编译成功');
+            // 切换到输出目录
+            process.chdir(outputDir);
             // 执行该文件
-            const execCommand = `${outputDir}\\${outputFileName}`;
-            console.log(execCommand);
+            const execCommand = `${outputFileName}`;
+            // const execCommand = `cmd.exe`;
             // 判断文件是否存在
             if (!fs.existsSync(execCommand)) {
                 vscode.window.showErrorMessage('项目生成失败，未找到可执行文件');
                 outputChannel.appendLine(`项目生成失败，未找到可执行文件: ${execCommand}`);
                 return;
             }
-            exec(execCommand, (error, stdout, stderr) => {
-                if (error) {
-                    vscode.window.showErrorMessage(`执行失败: ${error.message}`);
-                    outputChannel.appendLine(`执行失败: ${error.message}`);
-                    return;
+            // 创建伪终端
+            const writeEmitter = new vscode.EventEmitter<string>();
+            const pty: vscode.Pseudoterminal = {
+                onDidWrite: writeEmitter.event,
+                open: () => {
+                    writeEmitter.fire('开始执行程序...\r\n');
+                    // 在终端打开后执行程序
+                    const { spawn } = require('child_process');
+                    // 在spawn之前添加路径验证
+                    outputChannel.appendLine(`执行路径: ${outputDir}\\${execCommand}`);
+                    if (!fs.existsSync(`${outputDir}/${execCommand}`)) {
+                        writeEmitter.fire(`\r\n错误: 可执行文件不存在\r\n`);
+                        return;
+                    }
+                    const child = spawn('cmd.exe', ['/c', 'start', '/wait', 'cmd.exe', '/c', execCommand], {  // 改为通过cmd执行
+                        cwd: outputDir,
+                        windowsVerbatimArguments: true,
+                        stdio: ['ignore', 'pipe', 'pipe'],
+                        shell: false
+                    });
+
+                    // 添加错误事件监听
+                    child.on('error', (err: { message: any; }) => {
+                        const errMsg = `\r\n[进程错误] ${err.message}\r\n`;
+                        writeEmitter.fire(errMsg);
+                        outputChannel.append(errMsg);
+                    });
+
+                    // 添加关闭事件监听
+                    child.on('close', (code: any) => {
+                        const endMsg = `\r\n进程已退出，代码 ${code}\r\n`;
+                        writeEmitter.fire(endMsg);
+                        outputChannel.append(endMsg);
+                    });
+
+                    child.stdout.on('data', (data: Buffer) => {  // 使用Buffer类型
+                        const rawOutput = data.toString('utf8');
+                        // 添加ANSI转义字符处理
+                        const formatted = rawOutput
+                            .replace(/\n/g, '\r\n')
+                            .replace(/(\r\n|\r|\n)/g, '\r\n');
+                        writeEmitter.fire(`\r\n${formatted}`);
+                        outputChannel.append(formatted);
+                    });
+                    writeEmitter.fire('\r\n程序执行完毕，按任意键退出...\r\n');
+
+                },
+                close: () => writeEmitter.dispose(),
+                handleInput: (data: string) => {
+                    // 允许任意键退出
+                    terminal.dispose();
                 }
-                if (stderr) {
-                    vscode.window.showWarningMessage(`执行警告: ${stderr}`);
-                    outputChannel.appendLine(`执行警告: ${stderr}`);
-                }
-                outputChannel.appendLine(stdout);
+            };
+
+            const terminal = vscode.window.createTerminal({
+                name: 'GMC程序输出',
+                pty
             });
+            terminal.show();
         });
     } catch (err) {
         vscode.window.showErrorMessage(`编译异常: ${err}`);

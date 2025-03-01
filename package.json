@@ -12,6 +12,16 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "keybindings": [
+      {
+        "command": "cmand.构建",
+        "key": "f10"
+      },
+      {
+        "command": "cmand.调试",
+        "key": "f5"
+      }
+    ],
     "configuration": {
       "title": "CMand",
       "properties": {
