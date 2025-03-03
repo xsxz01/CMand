@@ -14,6 +14,9 @@ importers:
       pinyin:
         specifier: 2.11.2
         version: 2.11.2
+      pinyin-pro:
+        specifier: ^3.26.0
+        version: 3.26.0
     devDependencies:
       '@types/mocha':
         specifier: ^10.0.10
@@ -1599,6 +1602,9 @@ packages:
   picomatch@2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+
+  pinyin-pro@3.26.0:
+    resolution: {integrity: sha512-HcBZZb0pvm0/JkPhZHWA5Hqp2cWHXrrW/WrV+OtaYYM+kf35ffvZppIUuGmyuQ7gDr1JDJKMkbEE+GN0wfMoGg==}
 
   pinyin@2.11.2:
     resolution: {integrity: sha512-tAWDBcowj09j/vLUjty98nVqrbTVNhutf1VcyID4p0sxTFPzRyXw7n7Ic0HQwBdWFIWrrDP8bYiT64gaT6h3gA==}
@@ -3840,6 +3846,8 @@ snapshots:
   picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
+
+  pinyin-pro@3.26.0: {}
 
   pinyin@2.11.2:
     dependencies:

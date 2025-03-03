@@ -4,18 +4,22 @@ import { initializeCommandMapping } from './cmds/CommandMapping';
 import { ConfigManager } from './ConfigManager';
 import { ConfigValidator } from './utils/ConfigValidator';
 import { InitializePanel } from './panels/InitializePanel';
+import { pinyin } from 'pinyin-pro';
+import { keywords as ChineseKeyword } from './config/constant';
+import type { PinyinMapping } from './config/pinyin-mappings';
+
+// 中文关键词列表
+
+
+const pinyinCache = new Map(ChineseKeyword.map(word => [
+  word, 
+  pinyin(word, { pattern: 'first', toneType: 'none', type: 'array' }).join('')
+]));
 
 // 添加拼音补全提供器
 const pinyinProvider = vscode.languages.registerCompletionItemProvider('cm', {
   provideCompletionItems(document, position) {
-    const pinyinMap = [
-      { py: 'rg', word: '如果', snippet: '如果 ($1) {\n\t$2\n}' },
-      { py: 'hs', word: '函数', snippet: '函数 ${1:函数名}($2) {\n\t$3\n}' },
-      { py: 'xh', word: '循环', snippet: '循环 ($1) {\n\t$2\n}' },
-      { py: 'fz', word: '否则', snippet: '否则 {\n\t$1\n}' },
-      { py: 'zl', word: '整型', snippet: '整型 $1 = $2' },
-      { py: 'fd', word: '浮点', snippet: '浮点 $1 = $2' }
-    ];
+    const pinyinMap: PinyinMapping[] = require('./config/pinyin-mappings').pinyinMappings;
     // 获取光标前的连续字母（支持大小写）
     const linePrefix = document.getText(new vscode.Range(
       position.line, 0,
@@ -51,24 +55,56 @@ const pinyinProvider = vscode.languages.registerCompletionItemProvider('cm', {
 // 添加中文关键词补全提供器
 const chineseKeywordsProvider = vscode.languages.registerCompletionItemProvider('cm', {
   provideCompletionItems(document, position) {
-    // 中文关键词列表
-    const keywords = [
-      '如果', '否则', '函数', '循环', '返回',
-      '整型', '浮点', '字符串', '布尔', '新建',
-      '导入', '导出', '当', '继续', '跳出'
-    ];
+    const linePrefix = document.getText(new vscode.Range(
+      position.line, 0,
+      position.line, position.character
+    ));
+    
+    // 修正1：精确获取输入内容
+    const inputMatch = linePrefix.match(/([a-zA-Z]+|[\u4e00-\u9fa5])$/);
+    const input = inputMatch ? inputMatch[0] : '';
+    const isPinyinInput = /^[a-z]+$/i.test(input);
+    const searchKey = input.toLowerCase();
 
-    return keywords.map(word => {
+    return ChineseKeyword.map(word => {
+      // 修正2：使用预生成的拼音缓存
+      const pyAbbr = pinyinCache.get(word) || '';
+      
+      // 修正3：精确匹配逻辑
+      let match = false;
+      if (isPinyinInput) {
+        match = pyAbbr.startsWith(searchKey);
+      } else {
+        match = word.startsWith(searchKey);
+      }
+      
+      // 无输入时返回所有项
+      if (!input) {match = true;}
+
+      if (!match) {return null;}
+
+      // 修正4：正确的CompletionItem构造方式
       const completion = new vscode.CompletionItem(word);
-      completion.documentation = `中文关键字 → ${word}`;
+      completion.insertText = word;
+      completion.filterText = pyAbbr;
+      completion.sortText = pyAbbr;
+      completion.documentation = `中文关键字（拼音：${pyAbbr}）→ ${word}`;
       completion.kind = vscode.CompletionItemKind.Keyword;
+      
+      // 在右侧显示拼音提示
+      completion.label = {
+        label: word,
+        description: `[${pyAbbr}]`
+      };
+      
       return completion;
-    });
+    }).filter((item): item is vscode.CompletionItem => item !== null);
   }
 }, '');
 
 
 export function activate(context: vscode.ExtensionContext) {
+  
   // 注册中文关键词补全提供器
   context.subscriptions.push(pinyinProvider, chineseKeywordsProvider);
 

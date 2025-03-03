@@ -10,8 +10,7 @@
     "Other"
   ],
   "repository": "https://github.com/xsxz01/CMand.git",
-  "activationEvents": [
-  ],
+  "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
     "languages": [
@@ -150,7 +149,8 @@
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.36",
-    "pinyin": "2.11.2"
+    "pinyin": "2.11.2",
+    "pinyin-pro": "^3.26.0"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
