@@ -1,38 +1,30 @@
 {
-  // 注释符号配置（例如使用 # 还是 //）
   "comments": {
-    "lineComment": "//",    // 单行注释符号
-    "blockComment": ["/*", "*/"] // 多行注释符号
+      // symbol used for single line comment. Remove this entry if your language does not support line comments
+      "lineComment": "//",
+      // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
+      "blockComment": [ "/*", "*/" ]
   },
-  
-  // 自动包围符号（输入左括号时自动补全右括号）
-  "surroundingPairs": [
-    ["{", "}"],
-    ["[", "]"],
-    ["(", ")"],
-    ["\"", "\""],
-    ["'", "'"]
-  ],
-  
-  // 符号配对规则（用于高亮匹配）
+  // symbols used as brackets
   "brackets": [
-    ["{", "}"],
-    ["[", "]"],
-    ["(", ")"]
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"]
   ],
-  
-  // 自动闭合配置
+  // symbols that are auto closed when typing
   "autoClosingPairs": [
-    { "open": "{", "close": "}" },
-    { "open": "[", "close": "]" },
-    { "open": "(", "close": ")" },
-    { "open": "\"", "close": "\"" },
-    { "open": "'", "close": "'" }
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"],
+      ["\"", "\""],
+      ["'", "'"]
   ],
-  
-//   缩进规则（可选）
-  "__indentationRules": {
-    "increaseIndentPattern": "^.*\\{[^}\"']*$",
-    "decreaseIndentPattern": "^\\s*\\}"
-  }
+  // symbols that can be used to surround a selection
+  "surroundingPairs": [
+      ["{", "}"],
+      ["[", "]"],
+      ["(", ")"],
+      ["\"", "\""],
+      ["'", "'"]
+  ]
 }

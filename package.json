@@ -23,14 +23,14 @@
         "extensions": [
           ".cm"
         ],
-        "configuration": "./language-configuration.json",
-        "grammars": [
-          {
-            "language": "cm",
-            "scopeName": "source.cm",
-            "path": "./syntaxes/cm.tmLanguage.json"
-          }
-        ]
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "cm",
+        "scopeName": "source.cm",
+        "path": "./syntaxes/cm.tmLanguage.json"
       }
     ],
     "keybindings": [
