@@ -16,19 +16,37 @@ const pinyinProvider = vscode.languages.registerCompletionItemProvider('cm', {
       { py: 'zl', word: '整型', snippet: '整型 $1 = $2' },
       { py: 'fd', word: '浮点', snippet: '浮点 $1 = $2' }
     ];
+    // 获取光标前的连续字母（支持大小写）
+    const linePrefix = document.getText(new vscode.Range(
+      position.line, 0,
+      position.line, position.character
+    ));
+    const inputPinyin = linePrefix.match(/[a-zA-Z]+$/)?.[0]?.toLowerCase() || '';
 
-    // 更新补全项生成逻辑
-    return pinyinMap.map(item => {
-      const completion = new vscode.CompletionItem(item.word); // 中文标签
-      completion.filterText = item.py; // 仅用于拼音匹配
+    return pinyinMap.filter(item => 
+      item.py.startsWith(inputPinyin)
+    ).map(item => {
+      const completion = new vscode.CompletionItem({
+        label: item.word,
+        description: `[${item.py}]`  // 在右侧显示对应拼音
+      });
+      completion.filterText = item.py; // 关键修复：设置拼音匹配字段
       completion.insertText = new vscode.SnippetString(item.snippet);
-      // 移除所有拼音相关显示
       completion.documentation = `结构化代码模板：${item.word}`;
       completion.detail = '中文代码块';
+      
+      // 添加额外的关键字补全项
+      if (item.py === 'rg') {
+        const keywordCompletion = new vscode.CompletionItem(item.word);
+        keywordCompletion.insertText = item.word;
+        keywordCompletion.documentation = `中文关键字 → ${item.word}`;
+        keywordCompletion.detail = '中文关键字';
+        return [completion, keywordCompletion];
+      }
       return completion;
-    });
+    }).flat();
   }
-}, 'r');
+}, ''); // 保留空触发字符
 
 // 添加中文关键词补全提供器
 const chineseKeywordsProvider = vscode.languages.registerCompletionItemProvider('cm', {
