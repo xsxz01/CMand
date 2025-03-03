@@ -13,6 +13,26 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "cm",
+        "aliases": [
+          "CMand",
+          "cm"
+        ],
+        "extensions": [
+          ".cm"
+        ],
+        "configuration": "./language-configuration.json",
+        "grammars": [
+          {
+            "language": "cm",
+            "scopeName": "source.cm",
+            "path": "./syntaxes/cm.tmLanguage.json"
+          }
+        ]
+      }
+    ],
     "keybindings": [
       {
         "command": "cmand.构建",
@@ -129,5 +149,15 @@
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.36"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "keytar"
+    ],
+    "onlyBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "keytar"
+    ]
   }
 }
